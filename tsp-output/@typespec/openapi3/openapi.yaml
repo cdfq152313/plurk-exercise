@@ -7,7 +7,15 @@ paths:
   /scheduler/plurk:
     get:
       operationId: SchedulerPlurks_list
-      parameters: []
+      description: 從最近到最遠排序，offset為分頁系統，沒給就從第一筆
+      parameters:
+        - name: offset
+          in: query
+          required: true
+          description: 請提供前端目前持有的最後一筆日期，會以此為基礎繼續向後搜尋
+          schema:
+            type: string
+            format: date-time
       responses:
         '200':
           description: The request has succeeded.
@@ -17,8 +25,79 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SchedulerPlurk'
+        '403':
+          description: Access is forbidden.
+    post:
+      operationId: SchedulerPlurks_create
+      description: 建立新預約時需提供發文日期及文章。不需要提供會員名稱，Server會從登入狀態直接拿此人的會員名稱。
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchedulerPlurk'
+        '403':
+          description: Access is forbidden.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertSchedulerPlurkDto'
+  /scheduler/plurk/{id}:
+    patch:
+      operationId: SchedulerPlurks_update
+      description: 更改預約時需帶入發文id，其他與建立預約相同。不需要提供會員名稱，Server會從登入狀態直接拿此人的會員名稱。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchedulerPlurk'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              anyOf:
+                - $ref: '#/components/schemas/UpsertSchedulerPlurkDtoUpdate'
+                - $ref: '#/components/schemas/TypeSpec.Http.ForbiddenResponseUpdate'
+    delete:
+      operationId: SchedulerPlurks_delete
+      description: 刪除只需要id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '403':
+          description: Access is forbidden.
 components:
   schemas:
+    Result:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          type: boolean
     SchedulerPlurk:
       type: object
       required:
@@ -33,6 +112,36 @@ components:
           type: string
         user_id:
           type: string
+        posted:
+          type: string
+          format: date-time
+    TypeSpec.Http.ForbiddenResponseUpdate:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          enum:
+            - 403
+          description: The status code.
+      description: Access is forbidden.
+    UpsertSchedulerPlurkDto:
+      type: object
+      required:
+        - content
+        - posted
+      properties:
+        content:
+          type: string
+          maxLength: 360
+        posted:
+          type: string
+          format: date-time
+    UpsertSchedulerPlurkDtoUpdate:
+      type: object
+      properties:
+        content:
+          type: string
+          maxLength: 360
         posted:
           type: string
           format: date-time
