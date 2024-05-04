@@ -4,7 +4,7 @@ info:
   version: 0.0.0
 tags: []
 paths:
-  /plurk:
+  /scheduler/plurk:
     post:
       operationId: SchedulerPlurks_create
       description: 建立排程。若時間 > n，則忽略
@@ -22,8 +22,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SchedulerPlurk'
-      security:
-        - BearerAuth: []
     patch:
       operationId: SchedulerPlurks_update
       description: 更新排程。若時間 < n，則更新排程時間。若時間 > n，則先查看原排程是否已有，若有則刪除。
@@ -41,9 +39,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SchedulerPlurkUpdate'
-      security:
-        - BearerAuth: []
-  /plurk/{id}:
+  /scheduler/plurk/{id}:
     delete:
       operationId: SchedulerPlurks_delete
       description: 刪除排程。當刪除預約的訊息到來，查看原排程是否已有，若有則刪除。
@@ -60,8 +56,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Result'
-      security:
-        - BearerAuth: []
 components:
   schemas:
     Result:
@@ -100,7 +94,3 @@ components:
         posted:
           type: string
           format: date-time
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer

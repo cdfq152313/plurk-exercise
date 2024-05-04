@@ -70,8 +70,7 @@ namespace Module3 {
     result: boolean;
   }
 
-  @route("/plurk")
-  @useAuth(BearerAuth)
+  @route("/scheduler/plurk")
   interface SchedulerPlurks {
     @doc("建立排程。若時間 > n，則忽略")
     @post
