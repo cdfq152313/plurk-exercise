@@ -1,0 +1,106 @@
+openapi: 3.0.0
+info:
+  title: Plurk - Module 3
+  version: 0.0.0
+tags: []
+paths:
+  /plurk:
+    post:
+      operationId: SchedulerPlurks_create
+      description: 建立排程。若時間 > n，則忽略
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchedulerPlurk'
+      security:
+        - BearerAuth: []
+    patch:
+      operationId: SchedulerPlurks_update
+      description: 更新排程。若時間 < n，則更新排程時間。若時間 > n，則先查看原排程是否已有，若有則刪除。
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchedulerPlurkUpdate'
+      security:
+        - BearerAuth: []
+  /plurk/{id}:
+    delete:
+      operationId: SchedulerPlurks_delete
+      description: 刪除排程。當刪除預約的訊息到來，查看原排程是否已有，若有則刪除。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+      security:
+        - BearerAuth: []
+components:
+  schemas:
+    Result:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          type: boolean
+    SchedulerPlurk:
+      type: object
+      required:
+        - id
+        - content
+        - user_id
+        - posted
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        user_id:
+          type: string
+        posted:
+          type: string
+          format: date-time
+    SchedulerPlurkUpdate:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        user_id:
+          type: string
+        posted:
+          type: string
+          format: date-time
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

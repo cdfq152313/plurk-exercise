@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: (title)
+  title: Plurk - Module 1
   version: 0.0.0
 tags: []
 paths:
@@ -29,7 +29,7 @@ paths:
           description: Access is forbidden.
     post:
       operationId: SchedulerPlurks_create
-      description: 建立新預約時需提供發文日期及文章。不需要提供會員名稱，Server會從登入狀態直接拿此人的會員名稱。
+      description: 建立新預約時需提供發文日期及文章。不需要提供會員名稱，Server會從登入狀態直接拿此人的會員名稱。除了寫入資料庫，還會通知模組3。
       parameters: []
       responses:
         '200':
@@ -49,7 +49,7 @@ paths:
   /scheduler/plurk/{id}:
     patch:
       operationId: SchedulerPlurks_update
-      description: 更改預約時需帶入發文id，其他與建立預約相同。不需要提供會員名稱，Server會從登入狀態直接拿此人的會員名稱。
+      description: 更改預約時需帶入發文id，其他與建立預約相同。不需要提供會員名稱，Server會從登入狀態直接拿此人的會員名稱。除了寫入資料庫，還會通知模組3。
       parameters:
         - name: id
           in: path
@@ -73,7 +73,7 @@ paths:
                 - $ref: '#/components/schemas/TypeSpec.Http.ForbiddenResponseUpdate'
     delete:
       operationId: SchedulerPlurks_delete
-      description: 刪除只需要id
+      description: 刪除只需要id。除了寫入資料庫，還會通知模組3。
       parameters:
         - name: id
           in: path
@@ -89,6 +89,8 @@ paths:
                 $ref: '#/components/schemas/Result'
         '403':
           description: Access is forbidden.
+security:
+  - BearerAuth: []
 components:
   schemas:
     Result:
@@ -145,3 +147,7 @@ components:
         posted:
           type: string
           format: date-time
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
